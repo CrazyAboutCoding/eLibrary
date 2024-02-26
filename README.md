@@ -1,0 +1,1 @@
+A simple eLibrary application built with Next.js and React.js.

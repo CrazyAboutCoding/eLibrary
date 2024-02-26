@@ -1,0 +1,9 @@
+node_modules/
+
+.next/
+
+prisma/migrations/
+prisma/dev.db
+prisma/.prisma/client/
+
+.env

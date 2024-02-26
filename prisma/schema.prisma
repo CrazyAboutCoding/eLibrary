@@ -1,0 +1,132 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String
+  email     String   @unique
+  password  String
+  requests  Request[]
+  reviews   Review[]
+  favorites Favorite[]
+  readLaters ReadLater[]
+  userRoles UserRole[]
+  userBooks UserBook[]
+}
+
+model Book {
+  id          Int       @id @default(autoincrement())
+  title       String
+  author      String
+  description String?
+  url         String?
+  requests    Request[]
+  reviews     Review[]
+  favorites   Favorite[]
+  readLaters  ReadLater[]
+  bookTags    BookTag[]
+  bookFiles   BookFile[]
+  tag         Tag[]
+  filestorage FileStorage[]
+  userbook    UserBook[]
+}
+
+model Request {
+  id       Int      @id @default(autoincrement())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  book     Book     @relation(fields: [bookId], references: [id])
+  bookId   Int
+  reason   String
+}
+
+model Review {
+  id       Int      @id @default(autoincrement())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  book     Book     @relation(fields: [bookId], references: [id])
+  bookId   Int
+  comment  String?
+  rating   Int      @default(0)
+}
+
+model Favorite {
+  id       Int      @id @default(autoincrement())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  book     Book     @relation(fields: [bookId], references: [id])
+  bookId   Int
+}
+
+model ReadLater {
+  id       Int      @id @default(autoincrement())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  book     Book     @relation(fields: [bookId], references: [id])
+  bookId   Int
+}
+
+model UserRole {
+  id         Int         @id @default(autoincrement())
+  user       User        @relation(fields: [userId], references: [id])
+  userId     Int
+  role       String
+  permissions Permission[]
+}
+
+model Permission {
+  id         Int      @id @default(autoincrement())
+  role       UserRole @relation(fields: [roleId], references: [id])
+  roleId     Int
+  permission String
+}
+
+model Tag {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  books       Book[]
+  booktag     BookTag[]
+}
+
+model BookTag {
+  id     Int    @id @default(autoincrement())
+  book   Book   @relation(fields: [bookId], references: [id])
+  bookId Int
+  tag    Tag    @relation(fields: [tagId], references: [id])
+  tagId  Int
+}
+
+model FileStorage {
+  id       Int    @id @default(autoincrement())
+  name     String
+  type     String
+  size     Int
+  url      String
+  books    Book[]
+  bookfile BookFile[]
+}
+
+model BookFile {
+  id      Int         @id @default(autoincrement())
+  book    Book        @relation(fields: [bookId], references: [id])
+  bookId  Int
+  file    FileStorage @relation(fields: [fileId], references: [id])
+  fileId  Int
+}
+
+model UserBook {
+  id             Int      @id @default(autoincrement())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         Int
+  book           Book     @relation(fields: [bookId], references: [id])
+  bookId         Int
+  status         String
+  progress       Float?
+  dateCompleted  DateTime?
+}
